@@ -1,89 +1,86 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="8" md="6">
-      <div class="text-center">
-        <logo />
-        <vuetify-logo />
-      </div>
-      <v-card>
-        <v-card-title class="headline">
-          Welcome to the Vuetify + Nuxt.js template
-        </v-card-title>
-        <v-card-text>
-          <p>Vuetify is a progressive Material Design component framework for Vue.js. It was designed to empower developers to create amazing applications.</p>
-          <p>
-            For more information on Vuetify, check out the <a
-              href="https://vuetifyjs.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              documentation
-            </a>.
-          </p>
-          <p>
-            If you have questions, please join the official <a
-              href="https://chat.vuetifyjs.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="chat"
-            >
-              discord
-            </a>.
-          </p>
-          <p>
-            Find a bug? Report it on the github <a
-              href="https://github.com/vuetifyjs/vuetify/issues"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="contribute"
-            >
-              issue board
-            </a>.
-          </p>
-          <p>Thank you for developing with Vuetify and I look forward to bringing more exciting features in the future.</p>
-          <div class="text-xs-right">
-            <em><small>&mdash; John Leider</small></em>
+  <v-row v-if="allData" justify="center" align="center">
+    <v-col cols="12" md="10" lg="8">
+      <section v-if="featuredApp" class="my-8">
+        <v-card>
+          <v-row class="ma-0" align="center">
+            <v-col cols="12" lg="9" class="pa-0">
+              <v-img width="100%" :src="`/images/${featuredApp[0].id}A.png`" alt="Featured image"></v-img>
+            </v-col>
+            <v-col class="pa-8" cols="12" lg="3">
+              <h2>{{ featuredApp[0].title }}</h2>
+              <p>{{ featuredApp[0].body }}</p>
+              <nuxt-link class="d-block text-center main-bg-color white--text text-decoration-none pa-3" :to="`/details/${featuredApp[0].id}`">MORE INFO</nuxt-link>
+            </v-col>
+          </v-row>
+        </v-card>
+      </section>
+      <section v-if="recommendedApps" class="rounded-xl">
+        <v-card class="px-6 pb-7">
+          <div class="d-flex align-center justify-space-between">
+            <h3 class="py-4">Most Recommendation</h3>
+            <nuxt-link class="main-color text-decoration-none" to="#">SEE ALL</nuxt-link>
           </div>
-          <hr class="my-3">
-          <a
-            href="https://nuxtjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt Documentation
-          </a>
-          <br>
-          <a
-            href="https://github.com/nuxt/nuxt.js"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt GitHub
-          </a>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="primary"
-            nuxt
-            to="/inspire"
-          >
-            Continue
-          </v-btn>
-        </v-card-actions>
-      </v-card>
+          <AppsContainer :apps="recommendedApps" />
+        </v-card>
+      </section>
+      <section v-if="popularApps" class="rounded-xl my-8">
+        <v-card class="px-6 pb-7">
+          <div class="d-flex align-center justify-space-between">
+            <h3 class="py-4">Most Popular</h3>
+            <nuxt-link class="main-color text-decoration-none" to="#">SEE ALL</nuxt-link>
+          </div>
+          <AppsContainer :apps="popularApps" />
+        </v-card>
+      </section>
     </v-col>
   </v-row>
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
-import VuetifyLogo from '~/components/VuetifyLogo.vue'
-
+import AppsContainer from '@/components/AppsContainer';
 export default {
   components: {
-    Logo,
-    VuetifyLogo
+    AppsContainer
+  },
+  fetch({$axios, store}) {
+    return $axios.$get('https://jsonkeeper.com/b/6XNP')
+    .then(res => {
+      store.commit('updateAllData', res);
+    })
+    .catch(err => console.log(err))
+  },
+  data() {
+    return {
+      recommendedApps: [],
+      popularApps: [],
+      selectedCategory: null,
+      featuredApp: null,
+
+    }
+  },
+  computed: {
+    allData() {
+      return this.$store.state.allData;
+    }
+  },
+  mounted() {
+    this.filterByCategory();
+  },
+  methods: {
+    filterByCategory() {
+      if(this.selectedCategory) {
+        this.featuredApp = this.allData.filter(app => app.category == this.selectedCategory && app.type == 'f');
+        this.recommendedApps = this.allData.filter(app => app.category == this.selectedCategory && app.type == 'r');
+        this.popularApps = this.allData.filter(app => app.category == this.selectedCategory && app.type == 'p');
+      }else {
+        this.featuredApp = this.allData.filter(app => app.category == 'action' && app.type == 'f');
+        this.recommendedApps = this.allData.filter(app => app.type == 'r');
+        this.popularApps = this.allData.filter(app => app.type == 'p');
+      }
+    }
   }
 }
 </script>
+
+<style scoped lang="scss"></style>
