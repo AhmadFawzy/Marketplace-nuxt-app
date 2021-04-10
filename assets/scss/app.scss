@@ -1,0 +1,10 @@
+@import '@/assets/scss/variables';
+@import '@/assets/scss/components';
+
+html {
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  .home-body {
+    background-color: $bg-color;
+  }
+}
