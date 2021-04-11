@@ -10,6 +10,10 @@
         <section class="my-8">
           <v-card>
             <v-card-title>{{ appData.title }}</v-card-title>
+            <v-card-subtitle>
+              <p>{{ appData.category }}</p>
+              <p>{{ appType }}</p>
+            </v-card-subtitle>
             <v-card-text>{{ appData.body }}</v-card-text>
           </v-card>
         </section>
@@ -60,6 +64,25 @@ export default {
     },
     recommendedApps() {
       return this.$store.state.recommendedApps || this.getRecommendedApps();
+    },
+    appType() {
+      if(this.appData) {
+        let gameType;
+        switch(this.appData.type) {
+          case 'f':
+            gameType = "Featured Game";
+            break;
+          case 'r':
+            gameType = "Recommended Game";
+            break;
+          case 'p':
+            gameType = "Popular Game";
+            break;
+          default:
+            "unknown type";
+        }
+        return gameType;
+      }
     }
   },
 

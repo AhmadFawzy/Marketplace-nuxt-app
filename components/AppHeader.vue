@@ -50,4 +50,9 @@ export default {
 </script>
 
 <style lang="scss">
+.v-input__control {
+  &>div {
+    margin-bottom: 0!important;
+  }
+}
 </style>
