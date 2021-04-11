@@ -50,6 +50,12 @@ export default {
     .catch(err => console.log(err))
   },
 
+  head() {
+    return {
+      title: this.appData.title
+    }
+  },
+
   data() {
     return {}
   },
